@@ -1,4 +1,5 @@
 import flet as ft
+import numpy as np
 from backend import get_weather
 
 #App Dimensions
@@ -196,12 +197,12 @@ def main(page: ft.Page):
         padding = ft.padding.only(top = 20)
     )
 
-    gui_values = [search_bar.content.value, city_container.content.value, current_temp_container.content.value, max_temp_container.content.value,
+    gui_values = np.array([search_bar.content.value, city_container.content.value, current_temp_container.content.value, max_temp_container.content.value,
                             min_temp_container.content.value, weather_desc_container.content.value, feels_like_container.content.value,
                               sunrise_stack.controls[2].content.value, sunset_stack.controls[2].content.value, wind_stack.content.controls[2].content.value,
                                 humidity_stack.content.controls[2].content.value, pressure_stack.content.controls[2].content.value,
                                   visibility_stack.content.controls[2].content.value, sea_lvl_stack.content.controls[2].content.value,
-                                    ground_lvl_stack.content.controls[2].content.value, error_container.content.value]
+                                    ground_lvl_stack.content.controls[2].content.value, error_container.content.value])
 
     #UI Elements Display
     app_page = ft.Container(

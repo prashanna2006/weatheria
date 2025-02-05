@@ -9,4 +9,3 @@ key = os.getenv('API_KEY')
 
 def get_weather(gui_values):
     print(gui_values)
-    print(key)
