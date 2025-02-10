@@ -10,7 +10,7 @@ height = 800
 background_color = '#15719f'
 app_icon_color = ft.Colors.AMBER
 app_title_color = ft.Colors.WHITE
-search_bar_color = '#91cfec'
+search_bar_color = '#d1bd21'
 search_icon_color = '#000000'
 transparent_black = ft.Colors.with_opacity(0.25, '#000000')
 divider_color = '#000000'
@@ -46,7 +46,7 @@ def main(page: ft.Page):
 
     search_bar = ft.Container(
         content = ft.TextField(label = 'City Name', hint_text = 'Arlington', text_align = ft.TextAlign.LEFT, 
-                             width = width/1.5, border_color = search_bar_color, border_width = 2.5, border_radius = 10),
+                             width = width/1.5, border_color = search_bar_color, border_width = 2.5, border_radius = 25),
         padding = ft.padding.only(top=10)
     )
     
@@ -131,7 +131,7 @@ def main(page: ft.Page):
                 colors = color_gradient,
                 tile_mode = ft.GradientTileMode.CLAMP
             ),
-            border_radius = 15
+            border_radius = 50
         )
         template_stack = ft.Stack([
             template2,
@@ -235,7 +235,8 @@ def main(page: ft.Page):
         bgcolor = background_color,
         ink = True,
         on_click = lambda e: None,
-        padding = ft.padding.only(top = 25)
+        padding = ft.padding.only(top = 25),
+        border_radius = 10,
     )
 
     page.add(body)
