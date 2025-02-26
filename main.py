@@ -19,7 +19,9 @@ sunset_gradient = ['#000033', '#001A66', '#001F54']
 error_text_color = ft.Colors.AMBER
 
 
+
 def main(page: ft.Page):
+
 
     #App Page Settings
     page.window.width = 440
@@ -28,6 +30,9 @@ def main(page: ft.Page):
     page.scroll = 'auto'
     page.window.always_on_top = True #REMEMBER TO REMOVE IT FOR FINAL APP
 
+    def call_weather(search_bar):
+        gui_values["search_bar"] = search_bar.content.value
+        get_weather(gui_values)
 
     #Individual UI Elements
     app_icon = ft.Icon(ft.Icons.SUNNY, color = app_icon_color, size=30)
@@ -51,7 +56,7 @@ def main(page: ft.Page):
     )
     
     search_button = ft.Container(
-        content = ft.IconButton(icon = ft.Icons.SEARCH, icon_color = search_icon_color, bgcolor = transparent_black, on_click = lambda e: get_weather(gui_values)), #NEED TO ADD THE GET_WEATHER FUNCTION
+        content = ft.IconButton(icon = ft.Icons.SEARCH, icon_color = search_icon_color, bgcolor = transparent_black, on_click = lambda e: call_weather(search_bar)), #NEED TO ADD THE GET_WEATHER FUNCTION
         padding = ft.padding.only(top = 10),
     )
 
@@ -197,12 +202,31 @@ def main(page: ft.Page):
         padding = ft.padding.only(top = 20)
     )
 
-    gui_values = np.array([search_bar.content.value, city_container.content.value, current_temp_container.content.value, max_temp_container.content.value,
-                            min_temp_container.content.value, weather_desc_container.content.value, feels_like_container.content.value,
-                              sunrise_stack.controls[2].content.value, sunset_stack.controls[2].content.value, wind_stack.content.controls[2].content.value,
-                                humidity_stack.content.controls[2].content.value, pressure_stack.content.controls[2].content.value,
-                                  visibility_stack.content.controls[2].content.value, sea_lvl_stack.content.controls[2].content.value,
-                                    ground_lvl_stack.content.controls[2].content.value, error_container.content.value])
+    # gui_values = {search_bar.content.value, city_container.content.value, current_temp_container.content.value, max_temp_container.content.value,
+    #                         min_temp_container.content.value, weather_desc_container.content.value, feels_like_container.content.value,
+    #                           sunrise_stack.controls[2].content.value, sunset_stack.controls[2].content.value, wind_stack.content.controls[2].content.value,
+    #                             humidity_stack.content.controls[2].content.value, pressure_stack.content.controls[2].content.value,
+    #                               visibility_stack.content.controls[2].content.value, sea_lvl_stack.content.controls[2].content.value,
+    #                                 ground_lvl_stack.content.controls[2].content.value, error_container.content.value}
+
+    gui_values = {
+        "search_bar": search_bar.content.value,
+        "city_name": city_container.content.value,
+        "current_temp": current_temp_container.content.value,
+        "max_temp": max_temp_container.content.value,
+        "min_temp": min_temp_container.content.value,
+        "weather_desc": weather_desc_container.content.value,
+        "feels_like": feels_like_container.content.value,
+        "sunrise": sunrise_stack.controls[2].content.value,
+        "sunset": sunset_stack.controls[2].content.value,
+        "wind_speed": wind_stack.content.controls[2].content.value,
+        "humidity": humidity_stack.content.controls[2].content.value,
+        "pressure": pressure_stack.content.controls[2].content.value,
+        "visibility": visibility_stack.content.controls[2].content.value,
+        "sea_lvl": sea_lvl_stack.content.controls[2].content.value,
+        "ground_lvl": ground_lvl_stack.content.controls[2].content.value,
+        "error": error_container.content.value,
+    }
 
     #UI Elements Display
     app_page = ft.Container(
