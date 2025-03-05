@@ -1,5 +1,4 @@
 import flet as ft
-import numpy as np
 from backend import get_weather
 
 #App Dimensions
@@ -21,6 +20,7 @@ error_text_color = ft.Colors.AMBER
 
 
 def main(page: ft.Page):
+    global gui_values
 
 
     #App Page Settings
@@ -31,7 +31,8 @@ def main(page: ft.Page):
     page.window.always_on_top = True #REMEMBER TO REMOVE IT FOR FINAL APP
 
     def call_weather(search_bar):
-        gui_values["search_bar"] = search_bar.content.value
+
+        gui_values["search_bar"].value = search_bar.content.value
         get_weather(gui_values)
 
     #Individual UI Elements
@@ -58,6 +59,10 @@ def main(page: ft.Page):
     search_button = ft.Container(
         content = ft.IconButton(icon = ft.Icons.SEARCH, icon_color = search_icon_color, bgcolor = transparent_black, on_click = lambda e: call_weather(search_bar)), #NEED TO ADD THE GET_WEATHER FUNCTION
         padding = ft.padding.only(top = 10),
+    )
+
+    temp_button = ft.Container(
+        content = ft.ElevatedButton(text="\u0B00F", )
     )
 
     section_divider = ft.Divider(
@@ -210,22 +215,22 @@ def main(page: ft.Page):
     #                                 ground_lvl_stack.content.controls[2].content.value, error_container.content.value}
 
     gui_values = {
-        "search_bar": search_bar.content.value,
-        "city_name": city_container.content.value,
-        "current_temp": current_temp_container.content.value,
-        "max_temp": max_temp_container.content.value,
-        "min_temp": min_temp_container.content.value,
-        "weather_desc": weather_desc_container.content.value,
-        "feels_like": feels_like_container.content.value,
-        "sunrise": sunrise_stack.controls[2].content.value,
-        "sunset": sunset_stack.controls[2].content.value,
-        "wind_speed": wind_stack.content.controls[2].content.value,
-        "humidity": humidity_stack.content.controls[2].content.value,
-        "pressure": pressure_stack.content.controls[2].content.value,
-        "visibility": visibility_stack.content.controls[2].content.value,
-        "sea_lvl": sea_lvl_stack.content.controls[2].content.value,
-        "ground_lvl": ground_lvl_stack.content.controls[2].content.value,
-        "error": error_container.content.value,
+        "search_bar": search_bar.content,
+        "city_name": city_container.content,
+        "current_temp": current_temp_container.content,
+        "max_temp": max_temp_container.content,
+        "min_temp": min_temp_container.content,
+        "weather_desc": weather_desc_container.content,
+        "feels_like": feels_like_container.content,
+        "sunrise": sunrise_stack.controls[2].content,
+        "sunset": sunset_stack.controls[2].content,
+        "wind_speed": wind_stack.content.controls[2].content,
+        "humidity": humidity_stack.content.controls[2].content,
+        "pressure": pressure_stack.content.controls[2].content,
+        "visibility": visibility_stack.content.controls[2].content,
+        "sea_lvl": sea_lvl_stack.content.controls[2].content,
+        "ground_lvl": ground_lvl_stack.content.controls[2].content,
+        "error": error_container.content,
     }
 
     #UI Elements Display
