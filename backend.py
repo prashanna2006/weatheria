@@ -1,4 +1,3 @@
-import flet as ft
 import requests
 from dotenv import load_dotenv
 import os
@@ -7,35 +6,43 @@ from datetime import datetime, timedelta, timezone
 load_dotenv()
 key = os.getenv('API_KEY')
 
-# gui_values = {
-#         "search_bar": search_bar.content.value,
-#         "city_name": city_container.content.value,
-#         "current_temp": current_temp_container.content.value,
-#         "max_temp": max_temp_container.content.value,
-#         "min_temp": min_temp_container.content.value,
-#         "weather_desc": weather_desc_container.content.value,
-#         "feels_like": feels_like_container.content.value,
-#         "sunrise": sunrise_stack.controls[2].content.value,
-#         "sunset": sunset_stack.controls[2].content.value,
-#         "wind_speed": wind_stack.content.controls[2].content.value,
-#         "humidity": humidity_stack.content.controls[2].content.value,
-#         "pressure": pressure_stack.content.controls[2].content.value,
-#         "visibility": visibility_stack.content.controls[2].content.value,
-#         "sea_lvl": sea_lvl_stack.content.controls[2].content.value,
-#         "ground_lvl": ground_lvl_stack.content.controls[2].content.value,
-#         "error": error_container.content.value,
-#     }
 
-# api_values = [
-#                 data["name"], data["main"]["temp"], data["main"]["temp_max"], data["main"]["temp_min"], data["weather"][0]["description"], data["main"]["feels_like"],
-#                 data["sys"]["sunrise"], data["sys"]["sunset"], data["wind"]["speed"], data["main"]["humidity"], data["main"]["pressure"], data["visibility"],
-#                 data["main"]["sea_level"], data["main"]["grnd_level"], data["sys"]["country"]
-#                 ]
+def default_values(gui_values):
 
-# def error_display(error, gui_values):
-#     gui_values["error"].value = error
-#     gui_values["error"].color = ft.Colors.RED_600
-#     gui_values["error"].update()
+    defaults = {
+    "temp_unit": "\u00B0F",
+    "search_bar": None,
+    "city_name": "City_Name",
+    "current_temp": "--\u00B0F",
+    "max_temp": "--\u00B0F",
+    "min_temp": "--\u00B0F",
+    "weather_desc": "Weather Description",
+    "feels_like": f"Feels like --°F",
+    "sunrise": "--:-- AM",
+    "sunset": "--:-- PM",
+    "wind_speed": f"-- km/hr",
+    "humidity": f"-- %",
+    "pressure": f"-- hPa",
+    "visibility": f"---- m",
+    "sea_lvl": f"---- m",
+    "ground_lvl": f"---- m",
+    }
+
+    for key in gui_values.keys():
+        if (key == "error"):
+            pass
+        elif (key == "temp_unit"):
+            gui_values[key].text = defaults[key]
+            gui_values[key].update()
+        else:
+            gui_values[key].value = defaults[key]
+            gui_values[key].update()
+
+
+def error_display(error, gui_values):
+    gui_values["error"].value = error
+    gui_values["error"].update()
+    default_values(gui_values)
 
 
 def timezone_convert(timestamp, timezone_offset):
@@ -44,25 +51,45 @@ def timezone_convert(timestamp, timezone_offset):
     return local_time.strftime('%I:%M %p')
 
 
-def display_weather(data, gui_values, timezone):
-    gui_values["city_name"].value = f'{data["name"]}, {data["sys"]["country"]}'
-    gui_values["current_temp"].value = f"{round(int(data["main"]["temp"]))}\u00B0F"
-    gui_values["max_temp"].value = f"{round(int(data["main"]["temp_max"]))}\u00B0F"
-    gui_values["min_temp"].value = f"{round(int(data["main"]["temp_min"]))}\u00B0F"
-    gui_values["weather_desc"].value = f'{data["weather"][0]["description"]}'.title()
-    gui_values["feels_like"].value = f'Feels like: {data["main"]["feels_like"]}\u00B0F'
-    gui_values["sunrise"].value = timezone_convert(data["sys"]["sunrise"], timezone)
-    gui_values["sunset"].value = timezone_convert(data["sys"]["sunset"], timezone)
-    gui_values["wind_speed"].value = f'{data["wind"]["speed"]} km/hr'
-    gui_values["humidity"].value = f'{data["main"]["humidity"]} %'
-    gui_values["pressure"].value = f'{data["main"]["pressure"]} hPa'
-    gui_values["visibility"].value = f'{data["visibility"]} m'
-    gui_values["sea_lvl"].value = f'{data["main"]["sea_level"]} m'
-    gui_values["ground_lvl"].value = f'{data["main"]["grnd_level"]} m'
+def temp_conversion(temps):
+    celscius_temps = []
 
-    for value in gui_values.values():
-        if hasattr(value, "update"):
-            value.update()
+    for temp in temps:
+        celscius_temps.append((5*(temp-32)/9))
+    return celscius_temps
+
+
+def display_weather(data, gui_values, timezone):
+
+    current_temp = (data["main"]["temp"])
+    max_temp = (data["main"]["temp_max"])
+    min_temp = (data["main"]["temp_min"])
+    feels_like = data["main"]["feels_like"]
+    temps = [current_temp, max_temp, min_temp, feels_like]
+
+    if gui_values["temp_unit"].text == "\u00B0C":
+        current_temp, max_temp, min_temp, feels_like = temp_conversion(temps)
+
+    api_values = {
+        "city_name": f'{data["name"]}, {data["sys"]["country"]}',
+        "current_temp": f"{round(current_temp)}{gui_values["temp_unit"].text}",
+        "max_temp": f"{round(max_temp)}{gui_values["temp_unit"].text}",
+        "min_temp": f"{round(min_temp)}{gui_values["temp_unit"].text}",
+        "weather_desc": f'{data["weather"][0]["description"]}'.title(),
+        "feels_like": f'Feels like: {round(feels_like)}{gui_values["temp_unit"].text}',
+        "sunrise": timezone_convert(data["sys"]["sunrise"], timezone),
+        "sunset": timezone_convert(data["sys"]["sunset"], timezone),
+        "wind_speed": f'{data["wind"]["speed"]} km/hr',
+        "humidity": f'{data["main"]["humidity"]} %',
+        "pressure": f'{data["main"]["pressure"]} hPa',
+        "visibility": f'{data["visibility"]} m',
+        "sea_lvl": f'{data["main"]["sea_level"]} m',
+        "ground_lvl": f'{data["main"]["grnd_level"]} m',
+    }
+
+    for key in api_values.keys():
+        gui_values[key].value = api_values[key]
+        gui_values[key].update()
     gui_values["search_bar"].value = None
     gui_values["search_bar"].update()
     gui_values["error"].value = None
@@ -73,44 +100,47 @@ def get_weather(gui_values):
     try:
         url = f"https://api.openweathermap.org/data/2.5/weather?q={gui_values["search_bar"].value}&appid={key}&units=imperial"
         response = requests.get(url)
-        response.raise_for_status() # Raises exception for HTTP errors
+        response.raise_for_status()
         data = response.json()
-        print(data)
+        
         if data["cod"] == 200:
             display_weather(data, gui_values, data["timezone"])
             
-    
     except requests.exceptions.HTTPError as http_error:
         status_code = response.status_code
         match status_code:
             case 400:
-                if gui_values["search_bar"].value != "":
-                    print("Bad Request: Please Check Your Input")
+                error = "Bad Request: Please Check Your Input"
             case 401:
-                print("Unauthorized: Invalid API Key")
+                error = "Unauthorized: Invalid API Key"
             case 403:
-                print("Forbidden: Access Denied")
+                error = "Forbidden: Access Denied"
             case 404:
-                print("Not Found: City Not Found")
+                error = "Not Found: City Not Found"
             case 500:
-                print("Internal Server Error: Please Try Again Later")
+                error = "Internal Server Error: Please Try Again Later"
             case 502:
-                print("Bad Gateway: Invalid Response From The Server")
+                error = "Bad Gateway: Invalid Response From The Server"
             case 503:
-                print("Service Unavailable: Server Is Down")
+                error = "Service Unavailable: Server Is Down"
             case 504:
-                print("Gateway Timeout: No Response From The Server")
+                error = "Gateway Timeout: No Response From The Server"
             case _:
-                print(f"HTTP Error Occurred: {http_error.title()}")
+                error = f"HTTP Error Occurred: {http_error.title()}"
+        error_display(error, gui_values)
 
     except requests.exceptions.ConnectionError:
-        print("Connection Error: Check Your Internet Connection.")
+        error = "Connection Error: Check Your Internet Connection."
+        error_display(error, gui_values)
 
     except requests.exceptions.Timeout:
-        print("Timeout Error: The Request Timed Out.")
+        error = "Timeout Error: The Request Timed Out."
+        error_display(error, gui_values)
 
     except requests.exceptions.TooManyRedirects:
-        print("Too Many Redirects: Check The URL.")
+        error = "Too Many Redirects: Check The URL."
+        error_display(error, gui_values)
 
     except requests.exceptions.RequestException as req_error:
-        print(f"Request Error: {req_error.title()}")
+        error = f"Request Error: {req_error.title()}"
+        error_display(error, gui_values)
